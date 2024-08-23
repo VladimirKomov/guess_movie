@@ -92,17 +92,67 @@ CREATE TABLE IF NOT EXISTS "known_for_department" (
     PRIMARY KEY ("id")
 );
 
-ALTER TABLE "genres_films" ADD CONSTRAINT "genres_films_fk0" FOREIGN KEY ("id_film") REFERENCES "films"("id");
-ALTER TABLE "genres_films" ADD CONSTRAINT "genres_films_fk1" FOREIGN KEY ("id_genre") REFERENCES "genres"("id");
-ALTER TABLE "keywords" ADD CONSTRAINT "keywords_fk2" FOREIGN KEY ("id_film") REFERENCES "films"("id");
 
-ALTER TABLE "people_films" ADD CONSTRAINT "people_films_fk1" FOREIGN KEY ("id_film") REFERENCES "films"("id");
-ALTER TABLE "people_films" ADD CONSTRAINT "people_films_fk2" FOREIGN KEY ("id_people") REFERENCES "people"("id");
-ALTER TABLE "people_films" ADD CONSTRAINT "people_films_fk3" FOREIGN KEY ("id_known_for_department") REFERENCES "known_for_department"("id");
+-- Creating restrictions with cascading deletion and updating
+ALTER TABLE "genres_films" 
+ADD CONSTRAINT "genres_films_fk0" 
+FOREIGN KEY ("id_film") REFERENCES "films"("id") 
+ON DELETE CASCADE ON UPDATE CASCADE;
 
-ALTER TABLE "users" ADD CONSTRAINT "users_fk5" FOREIGN KEY ("role") REFERENCES "user_role"("id");
+ALTER TABLE "genres_films" 
+ADD CONSTRAINT "genres_films_fk1" 
+FOREIGN KEY ("id_genre") REFERENCES "genres"("id") 
+ON DELETE CASCADE ON UPDATE CASCADE;
 
-ALTER TABLE "guessed_films" ADD CONSTRAINT "guessed_films_fk1" FOREIGN KEY ("id_film") REFERENCES "films"("id");
-ALTER TABLE "guessed_films" ADD CONSTRAINT "guessed_films_fk2" FOREIGN KEY ("id_user") REFERENCES "users"("id");
+ALTER TABLE "keywords" 
+ADD CONSTRAINT "keywords_fk2" 
+FOREIGN KEY ("id_film") REFERENCES "films"("id") 
+ON DELETE CASCADE ON UPDATE CASCADE;
 
-ALTER TABLE "result" ADD CONSTRAINT "result_fk1" FOREIGN KEY ("id_user") REFERENCES "users"("id");
+ALTER TABLE "people_films" 
+ADD CONSTRAINT "people_films_fk1" 
+FOREIGN KEY ("id_film") REFERENCES "films"("id") 
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "people_films" 
+ADD CONSTRAINT "people_films_fk2" 
+FOREIGN KEY ("id_people") REFERENCES "people"("id") 
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "people_films" 
+ADD CONSTRAINT "people_films_fk3" 
+FOREIGN KEY ("id_known_for_department") REFERENCES "known_for_department"("id") 
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "users" 
+ADD CONSTRAINT "users_fk5" 
+FOREIGN KEY ("role") REFERENCES "user_role"("id") 
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "guessed_films" 
+ADD CONSTRAINT "guessed_films_fk1" 
+FOREIGN KEY ("id_film") REFERENCES "films"("id") 
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "guessed_films" 
+ADD CONSTRAINT "guessed_films_fk2" 
+FOREIGN KEY ("id_user") REFERENCES "users"("id") 
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "result" 
+ADD CONSTRAINT "result_fk1" 
+FOREIGN KEY ("id_user") REFERENCES "users"("id") 
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+
+-- Removing existing restrictions
+ALTER TABLE "genres_films" DROP CONSTRAINT "genres_films_fk0";
+ALTER TABLE "genres_films" DROP CONSTRAINT "genres_films_fk1";
+ALTER TABLE "keywords" DROP CONSTRAINT "keywords_fk2";
+ALTER TABLE "people_films" DROP CONSTRAINT "people_films_fk1";
+ALTER TABLE "people_films" DROP CONSTRAINT "people_films_fk2";
+ALTER TABLE "people_films" DROP CONSTRAINT "people_films_fk3";
+ALTER TABLE "users" DROP CONSTRAINT "users_fk5";
+ALTER TABLE "guessed_films" DROP CONSTRAINT "guessed_films_fk1";
+ALTER TABLE "guessed_films" DROP CONSTRAINT "guessed_films_fk2";
+ALTER TABLE "result" DROP CONSTRAINT "result_fk1";
