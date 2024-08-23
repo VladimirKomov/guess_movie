@@ -11,7 +11,8 @@ class DatabaseConnection:
     @property
     def connection(self):
         return self.__connection
-
+    
+    # create connection
     def __make_connection(self) -> extensions.connection:
         config = configparser.ConfigParser()
         script_dir = os.path.dirname(__file__)
@@ -32,8 +33,9 @@ class DatabaseConnection:
             self.__connection.close()
             self.__connection = None
 
+    # block with
     def __enter__(self):
         return self.__connection
-
+    # exit with
     def __exit__(self, exc_type, exc_value, traceback):
         self.close_connection()

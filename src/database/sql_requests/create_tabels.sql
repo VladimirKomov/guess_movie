@@ -5,19 +5,21 @@ CREATE TABLE IF NOT EXISTS "films" (
     "id" serial NOT NULL UNIQUE,
     "adult" boolean NOT NULL,
     "backdrop_path" varchar(150),
-    "id_tmdb" integer NOT NULL DEFAULT 0,
+    "id_tmdb" integer NOT NULL UNIQUE DEFAULT 0,
     "original_language" varchar(50) NOT NULL,
     "title" varchar(100) NOT NULL,
-    "overview" varchar(500),
+    "overview" varchar(100),
     "poster_path" varchar(150),
     "release_date" date NOT NULL,
     "vote_average" double precision NOT NULL,
     PRIMARY KEY ("id")
 );
 
+-- DROP TABLE IF EXISTS "genres";
+
 CREATE TABLE IF NOT EXISTS "genres" (
     "id" serial NOT NULL UNIQUE,
-    "id_tmdb" integer NOT NULL DEFAULT 0,
+    "id_tmdb" integer NOT NULL UNIQUE,
     "name" varchar(60) NOT NULL,
     PRIMARY KEY ("id")
 );
@@ -144,15 +146,21 @@ ADD CONSTRAINT "result_fk1"
 FOREIGN KEY ("id_user") REFERENCES "users"("id") 
 ON DELETE CASCADE ON UPDATE CASCADE;
 
+ALTER TABLE "genres" 
+ADD CONSTRAINT unique_id_tmdb UNIQUE ("id_tmdb");
+
+
+
+
 
 -- Removing existing restrictions
-ALTER TABLE "genres_films" DROP CONSTRAINT "genres_films_fk0";
-ALTER TABLE "genres_films" DROP CONSTRAINT "genres_films_fk1";
-ALTER TABLE "keywords" DROP CONSTRAINT "keywords_fk2";
-ALTER TABLE "people_films" DROP CONSTRAINT "people_films_fk1";
-ALTER TABLE "people_films" DROP CONSTRAINT "people_films_fk2";
-ALTER TABLE "people_films" DROP CONSTRAINT "people_films_fk3";
-ALTER TABLE "users" DROP CONSTRAINT "users_fk5";
-ALTER TABLE "guessed_films" DROP CONSTRAINT "guessed_films_fk1";
-ALTER TABLE "guessed_films" DROP CONSTRAINT "guessed_films_fk2";
-ALTER TABLE "result" DROP CONSTRAINT "result_fk1";
+-- ALTER TABLE "genres_films" DROP CONSTRAINT "genres_films_fk0";
+-- ALTER TABLE "genres_films" DROP CONSTRAINT "genres_films_fk1";
+-- ALTER TABLE "keywords" DROP CONSTRAINT "keywords_fk2";
+-- ALTER TABLE "people_films" DROP CONSTRAINT "people_films_fk1";
+-- ALTER TABLE "people_films" DROP CONSTRAINT "people_films_fk2";
+-- ALTER TABLE "people_films" DROP CONSTRAINT "people_films_fk3";
+-- ALTER TABLE "users" DROP CONSTRAINT "users_fk5";
+-- ALTER TABLE "guessed_films" DROP CONSTRAINT "guessed_films_fk1";
+-- ALTER TABLE "guessed_films" DROP CONSTRAINT "guessed_films_fk2";
+-- ALTER TABLE "result" DROP CONSTRAINT "result_fk1";
