@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS "keywords" (
 
 CREATE TABLE IF NOT EXISTS "people" (
     "id" serial NOT NULL UNIQUE,
-    "id_tmdb" integer NOT NULL DEFAULT 0,
+    "id_tmdb" integer NOT NULL DEFAULT 0 UNIQUE,
     "name" varchar(80) NOT NULL,
     "gender" smallint NOT NULL,
     "profile_path_photo" varchar(200),
@@ -90,12 +90,19 @@ CREATE TABLE IF NOT EXISTS "result" (
 
 CREATE TABLE IF NOT EXISTS "known_for_department" (
     "id" serial NOT NULL UNIQUE,
-    "known_for_department" varchar(100) NOT NULL,
+    "known_for_department" varchar(100) NOT NULL UNIQUE,
     PRIMARY KEY ("id")
 );
 
 
 -- Creating restrictions with cascading deletion and updating
+-- ALTER TABLE known_for_department
+-- ADD CONSTRAINT unique_known_for_department UNIQUE (known_for_department);
+
+-- ALTER TABLE people
+-- ADD CONSTRAINT id_tmdb_unique UNIQUE (id_tmdb);
+
+
 ALTER TABLE "genres_films" 
 ADD CONSTRAINT "genres_films_fk0" 
 FOREIGN KEY ("id_film") REFERENCES "films"("id") 
