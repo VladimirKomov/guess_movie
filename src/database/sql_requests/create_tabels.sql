@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS "films" (
     "id_tmdb" integer NOT NULL UNIQUE DEFAULT 0,
     "original_language" varchar(50) NOT NULL,
     "title" varchar(100) NOT NULL,
-    "overview" varchar(100),
+    "overview" varchar(1000),
     "poster_path" varchar(150),
     "release_date" date NOT NULL,
     "vote_average" double precision NOT NULL,
@@ -55,15 +55,20 @@ CREATE TABLE IF NOT EXISTS "people_films" (
     PRIMARY KEY ("id")
 );
 
+-- DROP TABLE result;
+
+-- DROP TABLE user_role;
+
+-- DROP TABLE users CASCADE;
+
 CREATE TABLE IF NOT EXISTS "users" (
-    "id" serial NOT NULL UNIQUE,
-    "nick" varchar(50) NOT NULL UNIQUE,
-    "e_mail" varchar(150) NOT NULL UNIQUE,
-    "name" varchar(150) NOT NULL,
-    "birthdate" date NOT NULL,
-    "role" integer NOT NULL,
-    "password" varchar(50) NOT NULL,
-    PRIMARY KEY ("id")
+    "id" SERIAL PRIMARY KEY,
+    "nick" VARCHAR(50) NOT NULL UNIQUE,
+    "e_mail" VARCHAR(150) NOT NULL UNIQUE,
+    "name" VARCHAR(150) NOT NULL,
+    "birthdate" DATE NOT NULL,
+    "role" INTEGER NOT NULL,
+    "password" VARCHAR(255) NOT NULL 
 );
 
 CREATE TABLE IF NOT EXISTS "user_role" (
