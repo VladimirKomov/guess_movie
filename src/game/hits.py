@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 from src.database.database_manager import GetData
 from src.database.primary_filling_manager import PrimaryFillingManager
+from src.game.game import Game
 
 # Abstract hint class
 
@@ -23,7 +24,7 @@ class KeywordsHint(Hint):
 # This is a genre hint
 class GenreHint(Hint):
     def apply(self, game):
-        data = GetData.get_genre(game.film["id"])
+        data = GetData.get_genre(game.film[0])
         return_str = f"Here is the genres of the film: {data}"
         return return_str
 
@@ -39,7 +40,7 @@ class YearHint(Hint):
 # This is one actor hint
 class ActorHint(Hint):
     def apply(self, game):
-        data = PrimaryFillingManager.get_actor(game.film["id"], 15, 1)
+        data = GetData.get_actor(game.film[0], 15, 1)
         return_str = f"Here is one actor of the film: {data}"
         return return_str
 
@@ -47,7 +48,7 @@ class ActorHint(Hint):
 # This is all actor hint
 class ActorsHint(Hint):
     def apply(self, game):
-        data = PrimaryFillingManager.get_actors(game.film["id"], 15, 1000)
+        data = GetData.get_actors(game.film[0], 15, 1000)
         return_str = f"Here is all actors of the film: {data}"
         return return_str
 
