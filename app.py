@@ -1,3 +1,4 @@
+from functools import wraps
 from flask import Flask, jsonify, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 import pickle
@@ -10,6 +11,16 @@ app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 
 user_manager = UserManager()
+
+# Decorator to require login for certain routes
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'username' not in session or 'user_id' not in session:
+            flash('Please log in to access this page.', 'danger')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 # Function to check if the current user is an admin
 def is_admin():
@@ -56,6 +67,7 @@ def login():
 
     return render_template('login.html')
 
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -80,12 +92,9 @@ def logout():
     flash('You have been logged out.', 'success')
     return redirect(url_for('login'))
 
-@app.route('/admin', methods=['GET', 'POST'])
-def admin():
-    if 'username' not in session or 'user_id' not in session:
-        flash('Please log in to access this page.', 'danger')
-        return redirect(url_for('login'))
-
+@app.route('/admin', methods=['GET', 'POST'], endpoint='admin')
+@login_required
+def admin_view():
     if not is_admin():
         flash('Access denied. Admins only.', 'danger')
         return redirect(url_for('login'))
@@ -106,12 +115,9 @@ def admin():
 
     return render_template('admin.html')
 
-@app.route('/fill_all_data', methods=['POST'])
-def fill_all_data():
-    if 'username' not in session or 'user_id' not in session:
-        flash('Please log in to access this page.', 'danger')
-        return redirect(url_for('login'))
-
+@app.route('/fill_all_data', methods=['POST'], endpoint='fill_all_data')
+@login_required
+def fill_all_data_view():
     if not is_admin():
         flash('Access denied. Admins only.', 'danger')
         return redirect(url_for('login'))
@@ -121,12 +127,9 @@ def fill_all_data():
     flash(f'All data for page {page} filled successfully.', 'success')
     return redirect(url_for('admin'))
 
-@app.route('/game')
-def game():
-    if 'username' not in session or 'user_id' not in session:
-        flash('Please log in to access this page.', 'danger')
-        return redirect(url_for('login'))
-
+@app.route('/game', methods=['GET'], endpoint='game')
+@login_required
+def game_view():
     if session.get('role_id') == 2:
         return redirect(url_for('admin'))
 
@@ -141,12 +144,9 @@ def game():
 
     return render_template('index.html', hints=hints, game_started=True)
 
-@app.route('/start_game', methods=['POST'])
-def start_game():
-    if 'username' not in session or 'user_id' not in session:
-        flash('Please log in to access this page.', 'danger')
-        return redirect(url_for('login'))
-
+@app.route('/start_game', methods=['POST'], endpoint='start_game')
+@login_required
+def start_game_view():
     user = User(session['user_id'], session['username'], session['name'], session['role_id'])
     game = Game(user)
     save_game_to_session(game)
@@ -158,12 +158,9 @@ def start_game():
 
     return jsonify({'game_started': True, 'hints': hints})
 
-@app.route('/get_hint', methods=['POST'])
-def get_hint():
-    if 'username' not in session or 'user_id' not in session:
-        flash('Please log in to access this page.', 'danger')
-        return redirect(url_for('login'))
-
+@app.route('/get_hint', methods=['POST'], endpoint='get_hint')
+@login_required
+def get_hint_view():
     game = load_game_from_session()
 
     hint_funcs = {
@@ -183,12 +180,9 @@ def get_hint():
     else:
         return jsonify({'hint': None}), 404
 
-@app.route('/check_answer', methods=['POST'])
-def check_answer():
-    if 'username' not in session or 'user_id' not in session:
-        flash('Please log in to access this page.', 'danger')
-        return redirect(url_for('login'))
-
+@app.route('/check_answer', methods=['POST'], endpoint='check_answer')
+@login_required
+def check_answer_view():
     user_answer = request.form['answer'].strip().lower()
     game = load_game_from_session()
 
@@ -199,14 +193,12 @@ def check_answer():
 
 @app.route('/end_game', methods=['POST'])
 def end_game():
-    if 'username' not in session or 'user_id' not in session:
-        flash('Please log in to access this page.', 'danger')
-        return redirect(url_for('login'))
-
-    session.pop('game', None)  # Remove the current game from the session
-    session.pop('film_id', None)  # Remove the current film from the session
-    session.pop('current_hint_index', None)  # Remove the current hint index from the session
+    session.pop('game', None)  # Удаляем текущую игру из сессии
+    session.pop('film_id', None)  # Удаляем текущий фильм из сессии
+    session.pop('current_hint_index', None)  # Удаляем индекс подсказки
     return jsonify({'status': 'Game ended'})
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

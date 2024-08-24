@@ -1,27 +1,23 @@
 function startGame() {
+    // Очистка всех предыдущих подсказок и результата
+    document.getElementById("hint1").style.display = "none";
+    document.getElementById("hint2").style.display = "none";
+    document.getElementById("hint-image").style.display = "none";
+    document.getElementById("answer").value = "";
+    document.getElementById("result").textContent = "";
+    document.getElementById("hint2-btn").style.display = "none";
+
+    // Запуск новой игры
     fetch('/start_game', {
         method: 'POST'
     }).then(response => response.json())
       .then(data => {
           if (data.game_started) {
-              document.getElementById("game-area").innerHTML = `
-                  <p id="hint1" class="hint">${data.hints.keywords}</p>
-                  <button id="hint2-btn" onclick="showHint(2)">Get Next Hint</button>
-                  <p id="hint2" class="hint" style="display:none;"></p><br>
-                  
-                  <input type="text" id="answer" placeholder="Enter your guess...">
-                  <button onclick="checkAnswer()">Check Answer</button>
-                  <p id="result"></p>
-                  <button id="new-game" onclick="endAndStartNewGame()">Start New Game</button>
-              `;
+              document.getElementById("hint1").textContent = data.hints.keywords;
+              document.getElementById("hint1").style.display = "block";
+              document.getElementById("hint2-btn").style.display = "inline-block";
           }
       });
-}
-
-function endAndStartNewGame() {
-    fetch('/end_game', {
-        method: 'POST'
-    }).then(response => startGame());
 }
 
 function showHint(hintNumber) {
@@ -34,11 +30,26 @@ function showHint(hintNumber) {
     }).then(response => response.json())
       .then(data => {
           if (data.hint) {
-              document.getElementById(`hint${hintNumber}`).innerHTML = data.hint;
-              document.getElementById(`hint${hintNumber}`).style.display = "block";
-              if (hintNumber < 6) {
+              if (hintNumber < 5) {
+                  document.getElementById(`hint${hintNumber}`).textContent = data.hint;
+                  document.getElementById(`hint${hintNumber}`).style.display = "block";
                   document.getElementById(`hint${hintNumber + 1}-btn`).style.display = "inline-block";
+              } else if (hintNumber === 5) {
+                  // Если это последняя подсказка (картинка)
+                  document.getElementById("hint-image").src = data.hint;
+                  document.getElementById("hint-image").style.display = "block";
               }
+          }
+      });
+}
+
+function endAndStartNewGame() {
+    fetch('/end_game', {
+        method: 'POST'
+    }).then(response => response.json())
+      .then(data => {
+          if (data.status === 'Game ended') {
+              startGame();  // Запускаем новую игру после завершения предыдущей
           }
       });
 }
@@ -59,3 +70,4 @@ function checkAnswer() {
           resultElement.style.color = data.correct ? "green" : "red";
       });
 }
+

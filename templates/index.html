@@ -15,14 +15,17 @@
                 <p id="hint1" class="hint">{{ hints.keywords }}</p>
                 <button id="hint2-btn" onclick="showHint(2)">Get Next Hint</button>
                 <p id="hint2" class="hint" style="display:none;"></p><br>
-                
-                <!-- Оставшиеся кнопки для подсказок можно вернуть при необходимости -->
-                
+
+                <!-- Image Hint - initially hidden -->
+                <div id="image-hint" style="display:none;">
+                    <img id="hint-image" src="" alt="Movie Image" style="max-width: 100%; height: auto;">
+                </div>
+
                 <input type="text" id="answer" placeholder="Enter your guess..."><br>
                 <button onclick="checkAnswer()">Check Answer</button>
                 <p id="result"></p>
-                
-                <!-- Кнопка завершения текущей игры и начала новой -->
+
+                <!-- Button to end the current game and start a new one -->
                 <button id="new-game" onclick="endAndStartNewGame()">Start New Game</button>
             {% else %}
                 <button id="start-game" onclick="startGame()">Start New Game</button>
