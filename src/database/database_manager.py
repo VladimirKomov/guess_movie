@@ -1,7 +1,6 @@
 from src.database.database_connection import DatabaseConnection
 
-
-class ChoosingFilm:
+class GetData:
     # getting a random movie for the game
     @staticmethod
     def get_random_film():
@@ -11,7 +10,6 @@ class ChoosingFilm:
                 film = cursor.fetchone()
                 return film
 
-class GetData:
     # Retrieves keywords associated with a specific film from the database
     @staticmethod
     def get_keywords(id_film):

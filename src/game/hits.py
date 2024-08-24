@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 from src.database.database_manager import GetData
 from src.database.primary_filling_manager import PrimaryFillingManager
+from src.game.game import Game
 
 # Abstract hint class
 
@@ -31,6 +32,7 @@ class GenreHint(Hint):
         genres_list = [keyword[0] for keyword in data]
         genres = ', '.join(genres_list)    
         return_str = f"Here is the genres of the film: {genres}"
+
         return return_str
 
 
@@ -49,6 +51,7 @@ class ActorHint(Hint):
         actor_list = [keyword[0] for keyword in data]
         actor = ', '.join(actor_list)   
         return_str = f"Here is one actor of the film: {actor}"
+
         return return_str
 
 
