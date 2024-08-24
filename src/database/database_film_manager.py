@@ -35,9 +35,11 @@ class GetData:
             
     # Retrieves actors related to a specific film and department, with a limit on the number of results
     @staticmethod
-    def get_actors(id_film, department_id, limit):
+    def get_actors(id_film, department, limit):
         with DatabaseConnection() as connection:
             with connection.cursor() as cursor:
+                cursor.execute('''SELECT id FROM known_for_department WHERE known_for_department = %s''', (department,))
+                department_id = cursor.fetchone()[0]
                 # Select the names of people who are related to the film and the specific department (acting)
                 cursor.execute('''SELECT people.name FROM people
                         JOIN people_films ON people.id = people_films.id_people

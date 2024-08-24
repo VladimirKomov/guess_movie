@@ -26,7 +26,7 @@ class KeywordsHint(Hint):
         if limit_words is not None:
                     keywords_list = keywords_list[:limit_words]
         keywords = ', '.join(keywords_list)            
-        return_str = f"Your first clue! Keywords that describe the film: {keywords}"
+        return_str = f"Keywords: {keywords}"
         return return_str
 
 
@@ -36,7 +36,7 @@ class GenreHint(Hint):
         data = GetData.get_genre(game.film[0])
         genres_list = [keyword[0] for keyword in data]
         genres = ', '.join(genres_list)    
-        return_str = f"Here is the genres of the film: {genres}"
+        return_str = f"The genres: {genres}"
 
         return return_str
 
@@ -45,17 +45,17 @@ class GenreHint(Hint):
 class YearHint(Hint):
     def apply(self, game):
         data = game.film[8]
-        return_str = f"Here is the year of the film: {data}"
+        return_str = f"Year: {data}"
         return return_str
 
 
 # This is one actor hint
 class ActorHint(Hint):
     def apply(self, game):
-        data = GetData.get_actors(game.film[0], 2, 1)
+        data = GetData.get_actors(game.film[0], 'Acting', 1)
         actor_list = [keyword[0] for keyword in data]
         actor = ', '.join(actor_list)   
-        return_str = f"Here is one actor of the film: {actor}"
+        return_str = f"Actor: {actor}"
 
         return return_str
 
@@ -63,10 +63,10 @@ class ActorHint(Hint):
 # This is all actor hint
 class ActorsHint(Hint):
     def apply(self, game):
-        data = GetData.get_actors(game.film[0], 2, 15)
+        data = GetData.get_actors(game.film[0],'Acting', 15)
         actors_list = [keyword[0] for keyword in data]
         actors = ', '.join(actors_list)   
-        return_str = f"Here is all actors of the film: {actors}"
+        return_str = f"Actors: {actors}"
         return return_str
 
 
@@ -74,12 +74,12 @@ class ActorsHint(Hint):
 class DescriptionHint(Hint):
     def apply(self, game):
         data = game.film[6]
-        return_str = f"Here is the description of the film: {data}"
+        return_str = f"Description: {data}"
         return return_str
 
 
 class ImageHint(Hint):
     def apply(self, game):
         data = game.film[2]
-        return_str = f"Here is the image of the film: https://image.tmdb.org/t/p/original{data}"
+        return_str = f"https://image.tmdb.org/t/p/original{data}"
         return return_str
