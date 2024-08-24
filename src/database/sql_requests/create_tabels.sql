@@ -1,4 +1,4 @@
--- Active: 1724139112563@@127.0.0.1@5432@guess_movie
+-- Active: 1724141109911@@127.0.0.1@5433@guess_movie@public
 CREATE DATABASE "guess_movie";
 
 CREATE TABLE IF NOT EXISTS "films" (
@@ -164,7 +164,7 @@ ADD CONSTRAINT unique_id_tmdb UNIQUE ("id_tmdb");
 
 
 
-
+-- ALTER TABLE films ALTER COLUMN overview TYPE VARCHAR(1000);
 -- Removing existing restrictions
 -- ALTER TABLE "genres_films" DROP CONSTRAINT "genres_films_fk0";
 -- ALTER TABLE "genres_films" DROP CONSTRAINT "genres_films_fk1";
