@@ -6,7 +6,6 @@ class InsertGameData():
     # Entering data about the result of the game
     @staticmethod
     def insert_game_result(game, result):
-        print('!')
         if result == True:
             number_wins = 1
         else:
@@ -31,9 +30,7 @@ class InsertGameData():
     # If there is no record with the specified user, add a new record
     @staticmethod
     def insert_guessed_films(game,result):
-        print('+')
         if result == True:
-            print('-')
             with DatabaseConnection() as connection:
                 with connection.cursor() as cursor:
                     cursor.execute('''INSERT INTO guessed_films (id_film, id_user)
