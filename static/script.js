@@ -1,5 +1,5 @@
 function startGame() {
-    // Очистка всех предыдущих подсказок и результата
+    // Clear all previous hints and result
     document.getElementById("hint1").style.display = "none";
     document.getElementById("hint2").style.display = "none";
     document.getElementById("hint-image").style.display = "none";
@@ -7,7 +7,7 @@ function startGame() {
     document.getElementById("result").textContent = "";
     document.getElementById("hint2-btn").style.display = "none";
 
-    // Запуск новой игры
+    // Start a new game
     fetch('/start_game', {
         method: 'POST'
     }).then(response => response.json())
@@ -30,26 +30,21 @@ function showHint(hintNumber) {
     }).then(response => response.json())
       .then(data => {
           if (data.hint) {
-              if (hintNumber < 5) {
+              if (hintNumber < 6) {
                   document.getElementById(`hint${hintNumber}`).textContent = data.hint;
                   document.getElementById(`hint${hintNumber}`).style.display = "block";
-                  document.getElementById(`hint${hintNumber + 1}-btn`).style.display = "inline-block";
-              } else if (hintNumber === 5) {
-                  // Если это последняя подсказка (картинка)
-                  document.getElementById("hint-image").src = data.hint;
-                  document.getElementById("hint-image").style.display = "block";
+                  // Disable the current hint button after showing the hint
+                  document.getElementById(`hint${hintNumber}-btn`).disabled = true;
+                  if (hintNumber + 1 <= 6) {
+                      document.getElementById(`hint${hintNumber + 1}-btn`).style.display = "inline-block";
+                  }
+              } else if (hintNumber === 6) {  // Image hint
+                  const imageUrl = data.hint;
+                  document.getElementById("hint-image").src = imageUrl;
+                  document.getElementById("image-link").href = imageUrl;
+                  document.getElementById("image-hint").style.display = "block";
+                  document.getElementById(`hint${hintNumber}-btn`).disabled = true;
               }
-          }
-      });
-}
-
-function endAndStartNewGame() {
-    fetch('/end_game', {
-        method: 'POST'
-    }).then(response => response.json())
-      .then(data => {
-          if (data.status === 'Game ended') {
-              startGame();  // Запускаем новую игру после завершения предыдущей
           }
       });
 }
@@ -71,3 +66,25 @@ function checkAnswer() {
       });
 }
 
+function endAndStartNewGame() {
+    fetch('/end_game', {
+        method: 'POST'
+    }).then(response => response.json())
+      .then(data => {
+          if (data.status === 'Game ended') {
+              // Start a new game and refresh the page
+              startGame();
+              window.location.reload(); // Reload the page after starting a new game
+          }
+      });
+}
+
+function startGame() {
+    fetch('/start_game', {
+        method: 'POST'
+    }).then(response => response.json())
+      .then(html => {
+          document.getElementById("game-area").innerHTML = html;
+          window.location.reload(); // Reload the page after starting a new game
+      });
+}

@@ -158,9 +158,9 @@ def start_game_view():
 
     return jsonify({'game_started': True, 'hints': hints})
 
-@app.route('/get_hint', methods=['POST'], endpoint='get_hint')
+@app.route('/get_hint', methods=['POST'])
 @login_required
-def get_hint_view():
+def get_hint():
     game = load_game_from_session()
 
     hint_funcs = {
@@ -168,7 +168,7 @@ def get_hint_view():
         2: game.get_actorsHint,
         3: game.get_yearHint,
         4: game.get_descriptionHint,
-        5: game.get_imageHint
+        5: game.get_imageHint  # This returns the URL
     }
 
     current_index = session.get('current_hint_index', 1)
@@ -179,6 +179,7 @@ def get_hint_view():
         return jsonify({'hint': hint})
     else:
         return jsonify({'hint': None}), 404
+
 
 @app.route('/check_answer', methods=['POST'], endpoint='check_answer')
 @login_required
@@ -193,12 +194,10 @@ def check_answer_view():
 
 @app.route('/end_game', methods=['POST'])
 def end_game():
-    session.pop('game', None)  # Удаляем текущую игру из сессии
-    session.pop('film_id', None)  # Удаляем текущий фильм из сессии
-    session.pop('current_hint_index', None)  # Удаляем индекс подсказки
+    session.pop('game', None)  # Remove the current game from the session
+    session.pop('film_id', None)  # Remove the current film from the session
+    session.pop('current_hint_index', None)  # Remove the current hint index
     return jsonify({'status': 'Game ended'})
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)

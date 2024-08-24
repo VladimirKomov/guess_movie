@@ -13,26 +13,40 @@
         <div id="game-area">
             {% if game_started %}
                 <p id="hint1" class="hint">{{ hints.keywords }}</p>
-                <button id="hint2-btn" onclick="showHint(2)">Get Next Hint</button>
-                <p id="hint2" class="hint" style="display:none;"></p><br>
-
-                <!-- Image Hint - initially hidden -->
+                <button id="hint2-btn" onclick="showHint(2)">Get Genres Hint</button>
+                <p id="hint2" class="hint" style="display:none;"></p>
+        
+                <button id="hint3-btn" style="display:none;" onclick="showHint(3)">Get Actors Hint</button>
+                <p id="hint3" class="hint" style="display:none;"></p>
+        
+                <button id="hint4-btn" style="display:none;" onclick="showHint(4)">Get Release date Hint</button>
+                <p id="hint4" class="hint" style="display:none;"></p>
+        
+                <button id="hint5-btn" style="display:none;" onclick="showHint(5)">Get Description Hint</button>
+                <p id="hint5" class="hint" style="display:none;"></p>
+        
+                <button id="hint6-btn" style="display:none;" onclick="showHint(6)">Get Image Hint</button>
                 <div id="image-hint" style="display:none;">
-                    <img id="hint-image" src="" alt="Movie Image" style="max-width: 100%; height: auto;">
-                </div>
-
-                <input type="text" id="answer" placeholder="Enter your guess..."><br>
+                    <a id="image-link" href="" target="_blank">
+                        <img id="hint-image" src="" alt="Movie Image" style="max-width: 100%; height: auto;">
+                    </a>
+                </div><br>
+        
+                <input type="text" id="answer" placeholder="Enter your guess...">
                 <button onclick="checkAnswer()">Check Answer</button>
                 <p id="result"></p>
-
-                <!-- Button to end the current game and start a new one -->
+        
                 <button id="new-game" onclick="endAndStartNewGame()">Start New Game</button>
             {% else %}
                 <button id="start-game" onclick="startGame()">Start New Game</button>
             {% endif %}
         </div><br>
-
+        
         <a href="{{ url_for('logout') }}">Logout</a>
+        
+        
+        
+
     </div>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
