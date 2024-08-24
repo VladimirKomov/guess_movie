@@ -11,18 +11,23 @@ body {
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     display: inline-block;
+    max-width: 600px; /* Maximum width of the container */
+    width: 100%;
+    overflow: hidden; /* Cut off content that exceeds the container */
 }
 
 input[type="text"], input[type="password"], input[type="email"], input[type="date"], input[type="number"] {
     padding: 10px;
-    width: 80%;
+    width: calc(100% - 20px); /* Fit within the container width */
     margin-top: 10px;
+    box-sizing: border-box; /* Include padding in the width calculation */
 }
 
 button {
     padding: 10px 20px;
     margin-top: 10px;
     cursor: pointer;
+    max-width: 100%; /* Limit button width */
 }
 
 #result {
@@ -79,4 +84,40 @@ button {
     display: none;
     padding: 6px 12px;
     border-top: none;
+}
+
+/* Additional styles for game hints */
+.hint {
+    max-height: 150px; /* Maximum height for hints */
+    overflow: auto; /* Scroll for long text */
+    word-wrap: break-word; /* Wrap long words */
+    margin-top: 10px;
+}
+
+/* Image hint styling */
+#image-hint img {
+    max-width: 100%; /* Limit image width */
+    height: auto; /* Maintain image proportions */
+    display: block;
+    margin: 0 auto; /* Center the image */
+}
+
+/* Additional spacing between buttons and content */
+.hint, #result, #answer, #new-game, button {
+    margin-top: 15px;
+}
+
+/* Spacing between buttons */
+button {
+    margin-bottom: 10px;
+}
+
+/* Ensure that image hint has spacing */
+#image-hint {
+    margin-top: 20px;
+}
+
+/* Additional spacing for the container */
+.container {
+    margin-bottom: 20px;
 }

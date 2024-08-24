@@ -1,5 +1,7 @@
+from functools import wraps
 from flask import Flask, jsonify, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
+import pickle
 
 from src.game.game_manager import Game
 from src.administration.user_manager import User, UserManager
@@ -8,18 +10,34 @@ from src.administration.fill_base import *
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 
-# Creating a UserManager object
 user_manager = UserManager()
 
-# Example of user role verification (suppose 2 is an administrator)
+# Decorator to require login for certain routes
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'username' not in session or 'user_id' not in session:
+            flash('Please log in to access this page.', 'danger')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# Function to check if the current user is an admin
 def is_admin():
     return session.get('role_id') == 2
 
+# Save the game object to the session
+def save_game_to_session(game):
+    session['game'] = pickle.dumps(game)
+
+# Load the game object from the session
+def load_game_from_session():
+    game_data = session.get('game')
+    return pickle.loads(game_data) if game_data else None
+
 @app.route('/')
 def home():
-    if 'username' in session:
-        return redirect(url_for('game'))
-    return redirect(url_for('login'))
+    return redirect(url_for('game') if 'username' in session else 'login')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -27,7 +45,7 @@ def login():
         nick_or_email = request.form['nick_or_email']
         password = request.form['password']
 
-        # User authorization via UserManager
+        # User authentication via UserManager
         success, result = user_manager.authenticate(nick_or_email, password)
 
         if success:
@@ -36,12 +54,19 @@ def login():
             session['username'] = user.nick
             session['name'] = user.name
             session['role_id'] = user.role_id
+            
             flash('Login successful!', 'success')
-            return redirect(url_for('game'))
+            
+            # Redirect to admin page if the user is an admin
+            if user.role_id == 2:  # Assuming role_id 2 is for administrators
+                return redirect(url_for('admin'))
+            else:
+                return redirect(url_for('game'))
         else:
             flash(result, 'danger')
 
     return render_template('login.html')
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -51,8 +76,6 @@ def register():
         name = request.form['name']
         birthdate = request.form['birthdate']
         password = request.form['password']
-
-        # User registration via UserManager
         success, message = user_manager.register(nick, email, name, birthdate, password)
 
         if success:
@@ -69,34 +92,32 @@ def logout():
     flash('You have been logged out.', 'success')
     return redirect(url_for('login'))
 
-@app.route('/admin', methods=['GET', 'POST'])
-def admin():
+@app.route('/admin', methods=['GET', 'POST'], endpoint='admin')
+@login_required
+def admin_view():
     if not is_admin():
         flash('Access denied. Admins only.', 'danger')
         return redirect(url_for('login'))
 
     if request.method == 'POST':
-        if 'fill_genres' in request.form:
-            fill_genres()
-            flash('Genres filled successfully.', 'success')
-        elif 'fill_films' in request.form:
-            fill_films()
-            flash('Films filled successfully.', 'success')
-        elif 'fill_people' in request.form:
-            fill_people()
-            flash('People filled successfully.', 'success')
-        elif 'fill_keywords' in request.form:
-            fill_keywords()
-            flash('Keywords filled successfully.', 'success')
-        elif 'fill_all_data' in request.form:
-            page = int(request.form['page'])
-            fill_all_data_films_by_page(page)
-            flash(f'Data for page {page} filled successfully.', 'success')
+        actions = {
+            'fill_genres': fill_genres,
+            'fill_films': fill_films,
+            'fill_people': fill_people,
+            'fill_keywords': fill_keywords,
+            'fill_all_data': lambda: fill_all_data_films_by_page(int(request.form['page']))
+        }
+
+        for action, func in actions.items():
+            if action in request.form:
+                func()
+                flash(f'{action.replace("_", " ").title()} completed successfully.', 'success')
 
     return render_template('admin.html')
 
-@app.route('/fill_all_data', methods=['POST'])
-def fill_all_data():
+@app.route('/fill_all_data', methods=['POST'], endpoint='fill_all_data')
+@login_required
+def fill_all_data_view():
     if not is_admin():
         flash('Access denied. Admins only.', 'danger')
         return redirect(url_for('login'))
@@ -106,74 +127,52 @@ def fill_all_data():
     flash(f'All data for page {page} filled successfully.', 'success')
     return redirect(url_for('admin'))
 
-@app.route('/game')
-def game():
-    if 'username' not in session or 'user_id' not in session:
-        flash('Please log in to access the game.', 'danger')
-        return redirect(url_for('login'))
+@app.route('/game', methods=['GET'], endpoint='game')
+@login_required
+def game_view():
+    if session.get('role_id') == 2:
+        return redirect(url_for('admin'))
 
-    # Создаем объект Game для текущего пользователя
     user = User(session['user_id'], session['username'], session['name'], session['role_id'])
     game = Game(user)
-    
-    # Сохраняем минимальные данные в сессии, такие как id фильма
-    session['film_id'] = game.film[0]  # Предполагается, что film[0] — это идентификатор фильма
-    
-    # Получаем первую подсказку
-    first_hint = game.get_keywordsHint()
-    session['current_hint_index'] = 1  # Устанавливаем текущий индекс подсказки
+    save_game_to_session(game)
 
-    hints = {'keywords': first_hint}  # Создаем словарь с первой подсказкой
+    first_hint = game.get_keywordsHint()
+    session['current_hint_index'] = 1
+
+    hints = {'keywords': first_hint}
 
     return render_template('index.html', hints=hints, game_started=True)
 
-
-@app.route('/start_game', methods=['POST'])
-def start_game():
-    if 'username' not in session or 'user_id' not in session:
-        flash('Please log in to start the game.', 'danger')
-        return redirect(url_for('login'))
-
-    # Создаем игру для текущего пользователя
+@app.route('/start_game', methods=['POST'], endpoint='start_game')
+@login_required
+def start_game_view():
     user = User(session['user_id'], session['username'], session['name'], session['role_id'])
     game = Game(user)
-    session['film_id'] = game.film[0]  # Предполагается, что film[0] — это идентификатор фильма
-    session['current_hint_index'] = 1  # Сохраняем текущий индекс подсказки
+    save_game_to_session(game)
 
     first_hint = game.get_keywordsHint()
+    session['current_hint_index'] = 1
+
     hints = {'keywords': first_hint}
 
     return jsonify({'game_started': True, 'hints': hints})
 
-
 @app.route('/get_hint', methods=['POST'])
+@login_required
 def get_hint():
-    if 'username' not in session or 'user_id' not in session:
-        return jsonify({'hint': None}), 403
+    game = load_game_from_session()
 
-    user = User(session['user_id'], session['username'], session['name'], session['role_id'])
-    film_id = session.get('film_id')
-    if not film_id:
-        return jsonify({'hint': None}), 404
-
-    game = Game(user)
-    game.film = (film_id,) + game.film[1:]  # Восстановление фильма
+    hint_funcs = {
+        1: game.get_genreHint,
+        2: game.get_actorsHint,
+        3: game.get_yearHint,
+        4: game.get_descriptionHint,
+        5: game.get_imageHint  # This returns the URL
+    }
 
     current_index = session.get('current_hint_index', 1)
-    hint = None
-
-    if current_index == 1:
-        hint = game.get_keywordsHint()
-    elif current_index == 2:
-        hint = game.get_genreHint()
-    elif current_index == 3:
-        hint = game.get_actorsHint()
-    elif current_index == 4:
-        hint = game.get_yearHint()
-    elif current_index == 5:
-        hint = game.get_descriptionHint()
-    elif current_index == 6:
-        hint = game.get_imageHint()
+    hint = hint_funcs.get(current_index, lambda: None)()
 
     if hint:
         session['current_hint_index'] = current_index + 1
@@ -182,35 +181,23 @@ def get_hint():
         return jsonify({'hint': None}), 404
 
 
-@app.route('/check_answer', methods=['POST'])
-def check_answer():
-    if 'username' not in session or 'user_id' not in session:
-        flash('Please log in to check the answer.', 'danger')
-        return redirect(url_for('login'))
-
+@app.route('/check_answer', methods=['POST'], endpoint='check_answer')
+@login_required
+def check_answer_view():
     user_answer = request.form['answer'].strip().lower()
-    
-    film_id = session.get('film_id')
-    if not film_id:
-        return jsonify({'result': 'No game in progress.', 'correct': False}), 404
+    game = load_game_from_session()
 
-    user = User(session['user_id'], session['username'], session['name'], session['role_id'])
-    game = Game(user)
-    game.film = (film_id,) + game.film[1:]  # Восстановление фильма
-
-    # Отладочный вывод для проверки содержимого game.film
-    print(f"Debug: game.film = {game.film}")
-    
-    # Правильный индекс для названия фильма — game.film[5]
     correct_answer = game.film[5].strip().lower()
+    is_correct = user_answer == correct_answer
 
-    if user_answer == correct_answer:
-        return jsonify({'result': 'Correct!', 'correct': True})
-    else:
-        return jsonify({'result': 'Incorrect. Try again!', 'correct': False})
+    return jsonify({'result': 'Correct!' if is_correct else 'Incorrect. Try again!', 'correct': is_correct})
 
-
-
+@app.route('/end_game', methods=['POST'])
+def end_game():
+    session.pop('game', None)  # Remove the current game from the session
+    session.pop('film_id', None)  # Remove the current film from the session
+    session.pop('current_hint_index', None)  # Remove the current hint index
+    return jsonify({'status': 'Game ended'})
 
 if __name__ == '__main__':
     app.run(debug=True)
