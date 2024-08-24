@@ -9,12 +9,40 @@
 <body>
     <div class="container">
         <h1>Guess the Movie Game</h1>
-        
-        <div id="hints">
-            <p>Hint 1: A movie about prison</p>
-            <p>Hint 2: A story of hope</p>
+
+        <div class="tab">
+            <button class="tablinks" onclick="openHint(event, 'Keywords')">Keywords</button>
+            <button class="tablinks" onclick="openHint(event, 'Year')">Year</button>
+            <button class="tablinks" onclick="openHint(event, 'Actors')">Actors</button>
+            <button class="tablinks" onclick="openHint(event, 'Image')">Image</button>
+            <button class="tablinks" onclick="openHint(event, 'Description')">Description</button>
         </div>
-        
+
+        <div id="Keywords" class="tabcontent">
+            <h3>Keywords</h3>
+            <p>{{ hints.keywords }}</p>
+        </div>
+
+        <div id="Year" class="tabcontent">
+            <h3>Year</h3>
+            <p>{{ hints.year }}</p>
+        </div>
+
+        <div id="Actors" class="tabcontent">
+            <h3>Actors</h3>
+            <p>{{ hints.actors }}</p>
+        </div>
+
+        <div id="Image" class="tabcontent">
+            <h3>Image</h3>
+            <img src="{{ url_for('static', filename=hints.image) }}" alt="Movie Image">
+        </div>
+
+        <div id="Description" class="tabcontent">
+            <h3>Description</h3>
+            <p>{{ hints.description }}</p>
+        </div>
+
         <input type="text" id="answer" placeholder="Enter your guess...">
         <button onclick="checkAnswer()">Check Answer</button>
         <p id="result"></p>

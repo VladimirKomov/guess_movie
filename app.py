@@ -72,18 +72,42 @@ def logout():
     flash('You have been logged out.', 'success')
     return redirect(url_for('login'))
 
+# @app.route('/game')
+# def game():
+#     if 'username' not in session:
+#         return redirect(url_for('login'))
+#     return render_template('index.html')
+
+# @app.route('/check_answer', methods=['POST'])
+# def check_answer():
+#     user_answer = request.form['answer'].lower()
+#     correct_answer = "the shawshank redemption"  # Пример правильного ответа
+#     result = "Correct!" if user_answer == correct_answer else "Incorrect. Try again!"
+#     return {"result": result}
+
 @app.route('/game')
 def game():
     if 'username' not in session:
         return redirect(url_for('login'))
-    return render_template('index.html')
+    
+    # Предположим, что у вас есть объект movie
+    # movie = get_random_movie()  # Получение случайного фильма
 
-@app.route('/check_answer', methods=['POST'])
-def check_answer():
-    user_answer = request.form['answer'].lower()
-    correct_answer = "the shawshank redemption"  # Пример правильного ответа
-    result = "Correct!" if user_answer == correct_answer else "Incorrect. Try again!"
-    return {"result": result}
+    hints = {
+        # 'keywords': KeywordsHint().get_hint(movie),
+        # 'year': YearHint().get_hint(movie),
+        # 'actors': ActorsHint().get_hint(movie),
+        # 'image': ImageHint().get_hint(movie),
+        # 'description': DescriptionHint().get_hint(movie)
+        'keywords': 'jkljjbjhvkjh',
+        'year': 'hshsj;kj;j;',
+        'actors': 'kjnlkjn;',
+        'image': 'ohgosjgshjoj',
+        'description': 'hlahlghakljghalkhl'
+    }
+
+    return render_template('index.html', hints=hints)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
