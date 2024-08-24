@@ -1,25 +1,23 @@
 from src.database.database_connection import DatabaseConnection
 
-
-class ChoosingFilm:
+class GetData:
     # getting a random movie for the game
     @staticmethod
     def get_random_movie():
         with DatabaseConnection() as connection:
             with connection.cursor() as cursor:
-                cursor.execute("SELECT * FROM movies ORDER BY RANDOM() LIMIT 1")
+                cursor.execute("SELECT * FROM films ORDER BY RANDOM() LIMIT 1")
                 film = cursor.fetchone()
                 return film
 
-class GetData:
     # Retrieves keywords associated with a specific film from the database
     @staticmethod
     def get_keywords(id_film):
         with DatabaseConnection() as connection:
             with connection.cursor() as cursor:
                  # Select keywords where the film ID matches
-                cursor.execute("SELECT keywords FROM keywords WHERE id_film = %s", (id_film))
-                keywords = cursor.fetchone()
+                cursor.execute("SELECT keywords FROM keywords WHERE id_film = %s", (id_film,))
+                keywords = cursor.fetchall()
                 return keywords
 
 
@@ -29,7 +27,7 @@ class GetData:
         with DatabaseConnection() as connection:
             with connection.cursor() as cursor:
                 # Select genres where the film ID matches
-                cursor.execute("SELECT genres FROM guessed_films WHERE id_film = %s", (id_film))
+                cursor.execute("SELECT genres FROM genres_films WHERE id_film = %s", (id_film,))
                 genres = cursor.fetchone()
                 return genres
             
