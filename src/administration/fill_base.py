@@ -23,6 +23,20 @@ def fill_keywords():
         id_tmdb = movie[3]
         data = ApiManager.get_keywords(id_tmdb)
         PrimaryFillingManager.fill_keywords(id_tmdb, data)
+
+def fill_all_data_films_by_page(page):
+    fill_genres()
+    data = ApiManager.get_films(page)
+    PrimaryFillingManager.fill_movies(data)
+    for movie in data['results']:
+        id_tmdb = movie['id']
+        data = ApiManager.get_people(id_tmdb)
+        PrimaryFillingManager.fill_people_and_related_data(id_tmdb, data)
+        data = ApiManager.get_keywords(id_tmdb)
+        PrimaryFillingManager.fill_keywords(id_tmdb, data)
+    
+    
+    
         
 
 

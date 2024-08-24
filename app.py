@@ -101,8 +101,23 @@ def admin():
         elif 'fill_keywords' in request.form:
             fill_keywords()
             flash('Keywords filled successfully.', 'success')
+        elif 'fill_all_data' in request.form:
+            page = int(request.form['page'])
+            fill_all_data_films_by_page(page)
+            flash(f'Data for page {page} filled successfully.', 'success')
 
     return render_template('admin.html')
+
+@app.route('/fill_all_data', methods=['POST'])
+def fill_all_data():
+    if not is_admin():
+        flash('Access denied. Admins only.', 'danger')
+        return redirect(url_for('login'))
+
+    page = int(request.form.get('page'))
+    fill_all_data_films_by_page(page)
+    flash(f'All data for page {page} filled successfully.', 'success')
+    return redirect(url_for('admin'))
 
 if __name__ == '__main__':
     app.run(debug=True)

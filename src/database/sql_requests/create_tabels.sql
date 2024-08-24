@@ -1,6 +1,6 @@
 -- Active: 1724139112563@@127.0.0.1@5432@guess_movie
 CREATE DATABASE "guess_movie";
-
+ 
 CREATE TABLE IF NOT EXISTS "films" (
     "id" serial NOT NULL UNIQUE,
     "adult" boolean NOT NULL,
