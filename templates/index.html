@@ -14,27 +14,20 @@
             {% if game_started %}
                 <p id="hint1" class="hint">{{ hints.keywords }}</p>
                 <button id="hint2-btn" onclick="showHint(2)">Get Next Hint</button>
-                <p id="hint2" class="hint" style="display:none;"></p>
+                <p id="hint2" class="hint" style="display:none;"></p><br>
                 
-                <!-- <button id="hint3-btn" onclick="showHint(3)" style="display:none;">Get Third Hint</button>
-                <p id="hint3" class="hint" style="display:none;"></p>
+                <!-- Оставшиеся кнопки для подсказок можно вернуть при необходимости -->
                 
-                <button id="hint4-btn" onclick="showHint(4)" style="display:none;">Get Fourth Hint</button>
-                <p id="hint4" class="hint" style="display:none;"></p>
-                
-                <button id="hint5-btn" onclick="showHint(5)" style="display:none;">Get Fifth Hint</button>
-                <p id="hint5" class="hint" style="display:none;"></p>
-                
-                <button id="hint6-btn" onclick="showHint(6)" style="display:none;">Get Final Hint</button>
-                <p id="hint6" class="hint" style="display:none;"></p> -->
-                
-                <input type="text" id="answer" placeholder="Enter your guess...">
+                <input type="text" id="answer" placeholder="Enter your guess..."><br>
                 <button onclick="checkAnswer()">Check Answer</button>
                 <p id="result"></p>
+                
+                <!-- Кнопка завершения текущей игры и начала новой -->
+                <button id="new-game" onclick="endAndStartNewGame()">Start New Game</button>
             {% else %}
                 <button id="start-game" onclick="startGame()">Start New Game</button>
             {% endif %}
-        </div>
+        </div><br>
 
         <a href="{{ url_for('logout') }}">Logout</a>
     </div>

@@ -12,7 +12,7 @@ class UserDataBaseManager:
         self.db_connection = DatabaseConnection()
 
     def register_user(self, nick, email, name, birthdate, password):
-        """Регистрация нового пользователя"""
+        # Registering a new user
         hashed_password = generate_password_hash(password)
 
         with self.db_connection.connection.cursor() as cursor:
@@ -28,7 +28,7 @@ class UserDataBaseManager:
                 return False
 
     def authenticate_user(self, nick_or_email, password):
-        """Авторизация пользователя"""
+        # User authorization
         with self.db_connection.connection.cursor() as cursor:
             cursor.execute("""
                 SELECT * FROM users WHERE nick = %s OR e_mail = %s
@@ -40,7 +40,7 @@ class UserDataBaseManager:
             return None
 
     def user_exists(self, nick, email):
-        """Проверка существования пользователя"""
+        # Verification of the user's existence
         with self.db_connection.connection.cursor() as cursor:
             cursor.execute("""
                 SELECT * FROM users WHERE nick = %s OR e_mail = %s

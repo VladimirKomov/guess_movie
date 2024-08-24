@@ -1,3 +1,29 @@
+function startGame() {
+    fetch('/start_game', {
+        method: 'POST'
+    }).then(response => response.json())
+      .then(data => {
+          if (data.game_started) {
+              document.getElementById("game-area").innerHTML = `
+                  <p id="hint1" class="hint">${data.hints.keywords}</p>
+                  <button id="hint2-btn" onclick="showHint(2)">Get Next Hint</button>
+                  <p id="hint2" class="hint" style="display:none;"></p><br>
+                  
+                  <input type="text" id="answer" placeholder="Enter your guess...">
+                  <button onclick="checkAnswer()">Check Answer</button>
+                  <p id="result"></p>
+                  <button id="new-game" onclick="endAndStartNewGame()">Start New Game</button>
+              `;
+          }
+      });
+}
+
+function endAndStartNewGame() {
+    fetch('/end_game', {
+        method: 'POST'
+    }).then(response => startGame());
+}
+
 function showHint(hintNumber) {
     fetch('/get_hint', {
         method: 'POST',
@@ -17,38 +43,6 @@ function showHint(hintNumber) {
       });
 }
 
-function startGame() {
-    fetch('/start_game', {
-        method: 'POST'
-    }).then(response => response.json())
-      .then(data => {
-          if (data.game_started) {
-              document.getElementById("game-area").innerHTML = `
-                  <p id="hint1" class="hint">${data.hints.keywords}</p>
-                  <button id="hint2-btn" onclick="showHint(2)">Get Second Hint</button>
-                  <p id="hint2" class="hint" style="display:none;"></p>
-                  
-                  <button id="hint3-btn" onclick="showHint(3)" style="display:none;">Get Third Hint</button>
-                  <p id="hint3" class="hint" style="display:none;"></p>
-                  
-                  <button id="hint4-btn" onclick="showHint(4)" style="display:none;">Get Fourth Hint</button>
-                  <p id="hint4" class="hint" style="display:none;"></p>
-                  
-                  <button id="hint5-btn" onclick="showHint(5)" style="display:none;">Get Fifth Hint</button>
-                  <p id="hint5" class="hint" style="display:none;"></p>
-                  
-                  <button id="hint6-btn" onclick="showHint(6)" style="display:none;">Get Final Hint</button>
-                  <p id="hint6" class="hint" style="display:none;"></p>
-                  
-                  <input type="text" id="answer" placeholder="Enter your guess...">
-                  <button onclick="checkAnswer()">Check Answer</button>
-                  <p id="result"></p>
-              `;
-          }
-      });
-}
-
-
 function checkAnswer() {
     const userAnswer = document.getElementById("answer").value;
 
@@ -65,4 +59,3 @@ function checkAnswer() {
           resultElement.style.color = data.correct ? "green" : "red";
       });
 }
-
