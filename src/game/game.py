@@ -1,6 +1,6 @@
 from src.database.database_connection import DatabaseConnection
 
-from src.database.database_manager import GetData
+from database_film_manager import GetData
 
 
 import tkinter as tk
