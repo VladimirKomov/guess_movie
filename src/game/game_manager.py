@@ -1,13 +1,5 @@
-import sys
-import os
-
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from game.hits import KeywordsHint
 from src.database.database_film_manager import GetData
-from src.database.database_connection import DatabaseConnection
-from src.game.hits import ActorHint, ActorsHint, DescriptionHint, GenreHint, ImageHint, KeywordsHint, YearHint
-import tkinter as tk
-from tkinter import messagebox
+from src.game.hits import *
 
 
 class Game:

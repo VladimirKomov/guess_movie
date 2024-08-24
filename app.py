@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, jsonify, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from src.administration.user_manager import UserManager
+from src.game.game_manager import Game
+from src.administration.user_manager import User, UserManager
 from src.administration.fill_base import *
 
 app = Flask(__name__)
@@ -12,7 +13,7 @@ user_manager = UserManager()
 
 # Example of user role verification (suppose 2 is an administrator)
 def is_admin():
-    return 'role_id' in session and session['role_id'] == 2
+    return session.get('role_id') == 2
 
 @app.route('/')
 def home():
@@ -26,13 +27,15 @@ def login():
         nick_or_email = request.form['nick_or_email']
         password = request.form['password']
 
-        # # User authorization via User Manager
+        # User authorization via UserManager
         success, result = user_manager.authenticate(nick_or_email, password)
 
         if success:
             user = result
-            session['username'] = user[1]  # user[1] - this is nick
-            session['role_id'] = user[5]  # user[5] - this is role_id
+            session['user_id'] = user.user_id
+            session['username'] = user.nick
+            session['name'] = user.name
+            session['role_id'] = user.role_id
             flash('Login successful!', 'success')
             return redirect(url_for('game'))
         else:
@@ -62,11 +65,9 @@ def register():
 
 @app.route('/logout')
 def logout():
-    session.pop('username', None)
-    session.pop('role_id', None)
+    session.clear()
     flash('You have been logged out.', 'success')
     return redirect(url_for('login'))
-
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
@@ -105,37 +106,109 @@ def fill_all_data():
     flash(f'All data for page {page} filled successfully.', 'success')
     return redirect(url_for('admin'))
 
-# @app.route('/game')
-# def game():
-#     if 'username' not in session:
-#         return redirect(url_for('login'))
+@app.route('/game')
+def game():
+    if 'username' not in session or 'user_id' not in session:
+        flash('Please log in to access the game.', 'danger')
+        return redirect(url_for('login'))
+
+    # Создаем объект Game для текущего пользователя
+    user = User(session['user_id'], session['username'], session['name'], session['role_id'])
+    game = Game(user)
     
-#     hints = {
-#         'keywords': 'jkljjbjhvkjh',
-#         'year': 'hshsj;kj;j;',
-#         'actors': 'kjnlkjn;',
-#         'image': 'ohgosjgshjoj',
-#         'description': 'hlahlghakljghalkhl'
-#     }
+    # Сохраняем минимальные данные в сессии, такие как id фильма
+    session['film_id'] = game.film[0]  # Предполагается, что film[0] — это идентификатор фильма
+    
+    # Получаем первую подсказку
+    first_hint = game.get_keywordsHint()
+    session['current_hint_index'] = 1  # Устанавливаем текущий индекс подсказки
 
-#     return render_template('index.html', hints=hints)
+    hints = {'keywords': first_hint}  # Создаем словарь с первой подсказкой
 
-@app.route('/start_game', methods=['POST'])
-def start_game():
-@app.route('/start_game', methods=['POST'])
-def start_game():
-    # Здесь вы должны сгенерировать или выбрать фильм для игры
-    movie = get_random_movie()  # Предположим, у вас есть функция, выбирающая случайный фильм
-    hints = {
-        'keywords': KeywordsHint().get_hint(movie),
-        'year': YearHint().get_hint(movie),
-        'actors': ActorsHint().get_hint(movie),
-        'image': ImageHint().get_hint(movie),
-        'description': DescriptionHint().get_hint(movie)
-    }
-    session['movie_id'] = movie.id  # Сохраняем идентификатор фильма в сессии
-    session['hints'] = hints  # Сохраняем подсказки в сессии
     return render_template('index.html', hints=hints, game_started=True)
+
+
+@app.route('/start_game', methods=['POST'])
+def start_game():
+    if 'username' not in session or 'user_id' not in session:
+        flash('Please log in to start the game.', 'danger')
+        return redirect(url_for('login'))
+
+    # Создаем игру для текущего пользователя
+    user = User(session['user_id'], session['username'], session['name'], session['role_id'])
+    game = Game(user)
+    session['film_id'] = game.film[0]  # Предполагается, что film[0] — это идентификатор фильма
+    session['current_hint_index'] = 1  # Сохраняем текущий индекс подсказки
+
+    first_hint = game.get_keywordsHint()
+    hints = {'keywords': first_hint}
+
+    return jsonify({'game_started': True, 'hints': hints})
+
+
+@app.route('/get_hint', methods=['POST'])
+def get_hint():
+    if 'username' not in session or 'user_id' not in session:
+        return jsonify({'hint': None}), 403
+
+    user = User(session['user_id'], session['username'], session['name'], session['role_id'])
+    film_id = session.get('film_id')
+    if not film_id:
+        return jsonify({'hint': None}), 404
+
+    game = Game(user)
+    game.film = (film_id,) + game.film[1:]  # Восстановление фильма
+
+    current_index = session.get('current_hint_index', 1)
+    hint = None
+
+    if current_index == 1:
+        hint = game.get_keywordsHint()
+    elif current_index == 2:
+        hint = game.get_genreHint()
+    elif current_index == 3:
+        hint = game.get_actorsHint()
+    elif current_index == 4:
+        hint = game.get_yearHint()
+    elif current_index == 5:
+        hint = game.get_descriptionHint()
+    elif current_index == 6:
+        hint = game.get_imageHint()
+
+    if hint:
+        session['current_hint_index'] = current_index + 1
+        return jsonify({'hint': hint})
+    else:
+        return jsonify({'hint': None}), 404
+
+
+@app.route('/check_answer', methods=['POST'])
+def check_answer():
+    if 'username' not in session or 'user_id' not in session:
+        flash('Please log in to check the answer.', 'danger')
+        return redirect(url_for('login'))
+
+    user_answer = request.form['answer'].strip().lower()
+    
+    film_id = session.get('film_id')
+    if not film_id:
+        return jsonify({'result': 'No game in progress.', 'correct': False}), 404
+
+    user = User(session['user_id'], session['username'], session['name'], session['role_id'])
+    game = Game(user)
+    game.film = (film_id,) + game.film[1:]  # Восстановление фильма
+
+    # Отладочный вывод для проверки содержимого game.film
+    print(f"Debug: game.film = {game.film}")
+    
+    # Правильный индекс для названия фильма — game.film[5]
+    correct_answer = game.film[5].strip().lower()
+
+    if user_answer == correct_answer:
+        return jsonify({'result': 'Correct!', 'correct': True})
+    else:
+        return jsonify({'result': 'Incorrect. Try again!', 'correct': False})
+
 
 
 
