@@ -9,13 +9,21 @@
 <body>
     <div class="container">
         <h1>Admin Panel</h1>
+
+        <form method="post" action="{{ url_for('fill_all_data') }}" style="margin-bottom: 20px;">
+            <label for="page" style="width: 150px; display: inline-block;">Enter Page Number:</label>
+            <input type="number" id="page" name="page" min="1" required style="margin-right: 10px;">
+            <button type="submit" name="fill_all_data">Fill All Data for Page</button>
+        </form>
+
         <form method="post">
             <button name="fill_genres">Fill Genres</button><br><br>
             <button name="fill_films">Fill Films</button><br><br>
             <button name="fill_people">Fill People</button><br><br>
             <button name="fill_keywords">Fill Keywords</button><br><br>
         </form>
-        <a href="{{ url_for('logout') }}">Logout</a>
+
+        <a href="{{ url_for('logout') }}">Logout</a><br>
         <a href="{{ url_for('game') }}">Back to Game</a>
     </div>
 </body>
