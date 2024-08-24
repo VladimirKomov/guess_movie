@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from src.database.database_manager import GetData
+from database_film_manager import GetData
 from src.database.primary_filling_manager import PrimaryFillingManager
 from src.game.game import Game
 

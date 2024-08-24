@@ -2,8 +2,6 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from src.administration.user_manager import UserManager
-# from src.administration.api_manager import ApiManager
-# from src.administration.primary_filling_manager import PrimaryFillingManager
 from src.administration.fill_base import *
 
 app = Flask(__name__)
@@ -29,15 +27,16 @@ def login():
         password = request.form['password']
 
         # Авторизация пользователя через UserManager
-        user = user_manager.authenticate_user(nick_or_email, password)
+        success, result = user_manager.authenticate(nick_or_email, password)
 
-        if user:
+        if success:
+            user = result
             session['username'] = user[1]  # user[1] - это поле nick
             session['role_id'] = user[5]  # user[5] - это поле role_id
             flash('Login successful!', 'success')
             return redirect(url_for('game'))
         else:
-            flash('Invalid credentials. Please try again.', 'danger')
+            flash(result, 'danger')
 
     return render_template('login.html')
 
@@ -48,26 +47,16 @@ def register():
         email = request.form['email']
         name = request.form['name']
         birthdate = request.form['birthdate']
-        # role_id = request.form['role_id']  # Ожидается выбор роли (например, 1 - пользователь, 2 - администратор)
         password = request.form['password']
 
-        # Проверка существования пользователя через UserManager
-        if not user_manager.user_exists(nick, email):
-            success = user_manager.register_user(
-                nick=nick,
-                email=email,
-                name=name,
-                birthdate=birthdate,
-                # role_id=role_id,
-                password=password
-            )
-            if success:
-                flash('Registration successful! You can now log in.', 'success')
-                return redirect(url_for('login'))
-            else:
-                flash('Registration failed. Please try again.', 'danger')
+        # Регистрация пользователя через UserManager
+        success, message = user_manager.register(nick, email, name, birthdate, password)
+
+        if success:
+            flash(message, 'success')
+            return redirect(url_for('login'))
         else:
-            flash('Username or email already exists. Please choose another one.', 'danger')
+            flash(message, 'danger')
 
     return render_template('register.html')
 
