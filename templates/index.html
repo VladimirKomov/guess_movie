@@ -10,46 +10,80 @@
     <div class="container">
         <h1>Guess the Movie Game</h1>
 
-        <div class="tab">
-            <button class="tablinks" onclick="openHint(event, 'Keywords')">Keywords</button>
-            <button class="tablinks" onclick="openHint(event, 'Year')">Year</button>
-            <button class="tablinks" onclick="openHint(event, 'Actors')">Actors</button>
-            <button class="tablinks" onclick="openHint(event, 'Image')">Image</button>
-            <button class="tablinks" onclick="openHint(event, 'Description')">Description</button>
+        <div id="game-area">
+            {% if game_started %}
+                <p id="hint1" class="hint">{{ hints.keywords }}</p>
+                <button onclick="showHint(2)" style="display:none;" id="hint2-btn">Get Second Hint</button>
+                <p id="hint2" class="hint" style="display:none;"></p>
+                
+                <button onclick="showHint(3)" style="display:none;" id="hint3-btn">Get Third Hint</button>
+                <p id="hint3" class="hint" style="display:none;"></p>
+                
+                <button onclick="showHint(4)" style="display:none;" id="hint4-btn">Get Fourth Hint</button>
+                <p id="hint4" class="hint" style="display:none;"></p>
+                
+                <button onclick="showHint(5)" style="display:none;" id="hint5-btn">Get Fifth Hint</button>
+                <p id="hint5" class="hint" style="display:none;"></p>
+                
+                <button onclick="showHint(6)" style="display:none;" id="hint6-btn">Get Final Hint</button>
+                <p id="hint6" class="hint" style="display:none;"></p>
+                
+                <input type="text" id="answer" placeholder="Enter your guess...">
+                <button onclick="checkAnswer()">Check Answer</button>
+                <p id="result"></p>
+            {% else %}
+                <button id="start-game" onclick="startGame()">Start New Game</button>
+            {% endif %}
         </div>
-
-        <div id="Keywords" class="tabcontent">
-            <h3>Keywords</h3>
-            <p>{{ hints.keywords }}</p>
-        </div>
-
-        <div id="Year" class="tabcontent">
-            <h3>Year</h3>
-            <p>{{ hints.year }}</p>
-        </div>
-
-        <div id="Actors" class="tabcontent">
-            <h3>Actors</h3>
-            <p>{{ hints.actors }}</p>
-        </div>
-
-        <div id="Image" class="tabcontent">
-            <h3>Image</h3>
-            <img src="{{ url_for('static', filename=hints.image) }}" alt="Movie Image">
-        </div>
-
-        <div id="Description" class="tabcontent">
-            <h3>Description</h3>
-            <p>{{ hints.description }}</p>
-        </div>
-
-        <input type="text" id="answer" placeholder="Enter your guess...">
-        <button onclick="checkAnswer()">Check Answer</button>
-        <p id="result"></p>
 
         <a href="{{ url_for('logout') }}">Logout</a>
     </div>
 
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        function startGame() {
+            fetch('/start_game', {
+                method: 'POST'
+            }).then(response => response.text())
+              .then(html => {
+                  document.getElementById("game-area").innerHTML = html;
+              });
+        }
+
+        function showHint(hintNumber) {
+            fetch('/get_hint', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `hint_number=${hintNumber}`
+            }).then(response => response.json())
+              .then(data => {
+                  if (data.hint) {
+                      document.getElementById(`hint${hintNumber}`).innerHTML = data.hint;
+                      document.getElementById(`hint${hintNumber}`).style.display = "block";
+                      if (hintNumber < 6) {
+                          document.getElementById(`hint${hintNumber + 1}-btn`).style.display = "inline-block";
+                      }
+                  }
+              });
+        }
+
+        function checkAnswer() {
+            const userAnswer = document.getElementById("answer").value;
+
+            fetch('/check_answer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `answer=${encodeURIComponent(userAnswer)}`
+            }).then(response => response.json())
+              .then(data => {
+                  const resultElement = document.getElementById("result");
+                  resultElement.textContent = data.result;
+                  resultElement.style.color = data.result === "Correct!" ? "green" : "red";
+              });
+        }
+    </script>
 </body>
 </html>
