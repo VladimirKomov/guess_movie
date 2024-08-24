@@ -71,3 +71,10 @@ class DescriptionHint(Hint):
         data = game.film[6]
         return_str = f"Here is the description of the film: {data}"
         return return_str
+
+
+class ImageHint(Hint):
+    def apply(self, game):
+        data = game.film[2]
+        return_str = f"Here is the image of the film: https://image.tmdb.org/t/p/original{data}"
+        return return_str
