@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Panel</h1>
+        <form method="post">
+            <button name="fill_genres">Fill Genres</button><br><br>
+            <button name="fill_films">Fill Films</button><br><br>
+            <button name="fill_people">Fill People</button><br><br>
+            <button name="fill_keywords">Fill Keywords</button><br><br>
+        </form>
+        <a href="{{ url_for('logout') }}">Logout</a>
+        <a href="{{ url_for('game') }}">Back to Game</a>
+    </div>
+</body>
+</html>

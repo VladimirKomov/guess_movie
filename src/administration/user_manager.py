@@ -5,22 +5,20 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from src.database.database_connection import DatabaseConnection
 
 
-
-
 class UserManager:
     def __init__(self):
         self.db_connection = DatabaseConnection()
 
-    def register_user(self, nick, email, name, birthdate, role, password):
+    def register_user(self, nick, email, name, birthdate, password):
         """Регистрация нового пользователя"""
         hashed_password = generate_password_hash(password)
 
         with self.db_connection.connection.cursor() as cursor:
             try:
                 cursor.execute("""
-                    INSERT INTO users (nick, e_mail, name, birthdate, role, password)
-                    VALUES (%s, %s, %s, %s, %s, %s)
-                """, (nick, email, name, birthdate, role, hashed_password))
+                    INSERT INTO users (nick, e_mail, name, birthdate, password)
+                    VALUES (%s, %s, %s, %s, %s)
+                """, (nick, email, name, birthdate, hashed_password))
                 self.db_connection.connection.commit()
                 return True
             except psycopg2.IntegrityError:
