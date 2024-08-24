@@ -54,7 +54,7 @@ class Game:
     
 
     # we compare the string that the user entered with the title of the movie
-    def is_same_film(self, user_input, threshold=90) -> bool:
+    def is_same_film(self, user_input, threshold=80) -> bool:
         similarity = fuzz.partial_ratio(self.film[5], user_input)
-        # Check if it is higher than the threshold value (90%)
+        # Check if it is higher than the threshold value (80%)
         return similarity >= threshold
