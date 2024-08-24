@@ -2,15 +2,19 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from src.administration.user_manager import UserManager
-
+# from src.administration.api_manager import ApiManager
+# from src.administration.primary_filling_manager import PrimaryFillingManager
+from src.administration.fill_base import *
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 
-# Создание объекта подключения к базе данных
-# db_connection = DatabaseConnection()
 # Создание объекта UserManager
 user_manager = UserManager()
+
+# Пример проверки роли пользователя (предположим, 2 - администратор)
+def is_admin():
+    return 'role_id' in session and session['role_id'] == 2
 
 @app.route('/')
 def home():
@@ -29,6 +33,7 @@ def login():
 
         if user:
             session['username'] = user[1]  # user[1] - это поле nick
+            session['role_id'] = user[5]  # user[5] - это поле role_id
             flash('Login successful!', 'success')
             return redirect(url_for('game'))
         else:
@@ -43,7 +48,7 @@ def register():
         email = request.form['email']
         name = request.form['name']
         birthdate = request.form['birthdate']
-        role = request.form['role']
+        # role_id = request.form['role_id']  # Ожидается выбор роли (например, 1 - пользователь, 2 - администратор)
         password = request.form['password']
 
         # Проверка существования пользователя через UserManager
@@ -53,7 +58,7 @@ def register():
                 email=email,
                 name=name,
                 birthdate=birthdate,
-                role=role,
+                # role_id=role_id,
                 password=password
             )
             if success:
@@ -69,36 +74,16 @@ def register():
 @app.route('/logout')
 def logout():
     session.pop('username', None)
+    session.pop('role_id', None)
     flash('You have been logged out.', 'success')
     return redirect(url_for('login'))
-
-# @app.route('/game')
-# def game():
-#     if 'username' not in session:
-#         return redirect(url_for('login'))
-#     return render_template('index.html')
-
-# @app.route('/check_answer', methods=['POST'])
-# def check_answer():
-#     user_answer = request.form['answer'].lower()
-#     correct_answer = "the shawshank redemption"  # Пример правильного ответа
-#     result = "Correct!" if user_answer == correct_answer else "Incorrect. Try again!"
-#     return {"result": result}
 
 @app.route('/game')
 def game():
     if 'username' not in session:
         return redirect(url_for('login'))
     
-    # Предположим, что у вас есть объект movie
-    # movie = get_random_movie()  # Получение случайного фильма
-
     hints = {
-        # 'keywords': KeywordsHint().get_hint(movie),
-        # 'year': YearHint().get_hint(movie),
-        # 'actors': ActorsHint().get_hint(movie),
-        # 'image': ImageHint().get_hint(movie),
-        # 'description': DescriptionHint().get_hint(movie)
         'keywords': 'jkljjbjhvkjh',
         'year': 'hshsj;kj;j;',
         'actors': 'kjnlkjn;',
@@ -108,6 +93,27 @@ def game():
 
     return render_template('index.html', hints=hints)
 
+@app.route('/admin', methods=['GET', 'POST'])
+def admin():
+    if not is_admin():
+        flash('Access denied. Admins only.', 'danger')
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        if 'fill_genres' in request.form:
+            fill_genres()
+            flash('Genres filled successfully.', 'success')
+        elif 'fill_films' in request.form:
+            fill_films()
+            flash('Films filled successfully.', 'success')
+        elif 'fill_people' in request.form:
+            fill_people()
+            flash('People filled successfully.', 'success')
+        elif 'fill_keywords' in request.form:
+            fill_keywords()
+            flash('Keywords filled successfully.', 'success')
+
+    return render_template('admin.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

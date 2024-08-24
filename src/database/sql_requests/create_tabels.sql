@@ -1,4 +1,4 @@
--- Active: 1724141109911@@127.0.0.1@5433@guess_movie@public
+-- Active: 1724139112563@@127.0.0.1@5432@guess_movie
 CREATE DATABASE "guess_movie";
 
 CREATE TABLE IF NOT EXISTS "films" (
@@ -67,15 +67,20 @@ CREATE TABLE IF NOT EXISTS "users" (
     "e_mail" VARCHAR(150) NOT NULL UNIQUE,
     "name" VARCHAR(150) NOT NULL,
     "birthdate" DATE NOT NULL,
-    "role" INTEGER NOT NULL,
-    "password" VARCHAR(255) NOT NULL 
+    "role_id" INTEGER NOT NULL DEFAULT 1,
+    "password" VARCHAR(255) NOT NULL,
+    FOREIGN KEY ("role_id") REFERENCES "user_role" ("id")
 );
+
+-- DROP TABLE user_role;
 
 CREATE TABLE IF NOT EXISTS "user_role" (
     "id" serial NOT NULL UNIQUE,
-    "role" varchar(50) NOT NULL,
+    "role" varchar(50) NOT NULL UNIQUE,
     PRIMARY KEY ("id")
 );
+
+INSERT INTO "user_role" ("role") VALUES ('user'), ('administrator');
 
 CREATE TABLE IF NOT EXISTS "guessed_films" (
     "id" serial NOT NULL UNIQUE,
@@ -138,10 +143,6 @@ ADD CONSTRAINT "people_films_fk3"
 FOREIGN KEY ("id_known_for_department") REFERENCES "known_for_department"("id") 
 ON DELETE CASCADE ON UPDATE CASCADE;
 
-ALTER TABLE "users" 
-ADD CONSTRAINT "users_fk5" 
-FOREIGN KEY ("role") REFERENCES "user_role"("id") 
-ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE "guessed_films" 
 ADD CONSTRAINT "guessed_films_fk1" 
