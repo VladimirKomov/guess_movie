@@ -1,6 +1,6 @@
 from src.database.database_film_manager import GetData
 from src.game.hits import *
-
+from rapidfuzz import fuzz
 
 class Game:
     # creating a game
@@ -51,3 +51,10 @@ class Game:
         image_hint = ImageHint()
         image_result = image_hint.apply(self)
         return image_result
+    
+
+    # we compare the string that the user entered with the title of the movie
+    def is_same_film(self, user_input, threshold=90) -> bool:
+        similarity = fuzz.partial_ratio(self.film[5], user_input)
+        # Check if it is higher than the threshold value (90%)
+        return similarity >= threshold
