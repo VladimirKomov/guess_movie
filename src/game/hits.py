@@ -1,6 +1,11 @@
 from abc import ABC, abstractmethod
+import sys
+import os
 
-from database_film_manager import GetData
+# Добавляем путь к src
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from src.database.database_film_manager import GetData
 from src.database.primary_filling_manager import PrimaryFillingManager
 from src.game.game import Game
 
