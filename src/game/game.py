@@ -13,5 +13,5 @@ class Game:
         self.points = points
         # getting a random movie for the game
 
-        self.film = ChoosingFilm.get_random_film() 
+        self.film = GetData.get_random_film() 
 
