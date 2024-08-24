@@ -9,5 +9,5 @@ class Game:
         self.user = user
         self.points = points
         # getting a random movie for the game
-        self.film = ChoosingFilm._get_random_movie() 
+        self.film = ChoosingFilm.get_random_film() 
 
