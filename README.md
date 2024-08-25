@@ -6,6 +6,11 @@
 - The game will help you have a great time and choose a movie for the evening!
 - IT'S GOING TO BE FUN✨Magic ✨
 
+### You can try to play.
+The archive of the database is given in the backup_dataBase file.
+The database contains about 80 movies, you need to edit the config_database.ini file to connect to your database.
+To add new movies to the database, you need to edit the config_api.ini file, register on the website https://www.themoviedb.org/settings/api and to get a free key, add the keys to the config_api.ini file.
+
 ## Features
 - Downloads a list of movies from the site The Movie Database (TMDB) using API
 - Movie data is processed and stored in a relational database
