@@ -1,16 +1,7 @@
 from abc import ABC, abstractmethod
-import sys
-import os
-
-# Добавляем путь к src
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 from src.database.database_film_manager import GetData
-from src.database.primary_filling_manager import PrimaryFillingManager
-from game.game_manager import Game
 
 # Abstract hint class
-
 
 class Hint(ABC):
     @abstractmethod
@@ -77,13 +68,14 @@ class DescriptionHint(Hint):
         return_str = f"Description: {data}"
         return return_str
 
-
+# This is a hint for the picture
 class ImageHint(Hint):
     def apply(self, game):
         data = game.film[2]
         return_str = f"https://image.tmdb.org/t/p/original{data}"
         return return_str
-    
+
+# This is a poster  
 class ImagePoster(Hint):
     def apply(self, game):
         data = game.film[7]

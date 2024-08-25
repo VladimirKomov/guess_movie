@@ -32,14 +32,14 @@
                     </a>
                 </div><br>
 
-                 <!-- Button to reveal the answer -->
-                 <button id="reveal-answer-btn" onclick="revealAnswer()">Reveal Answer</button>
-                 <div id="answer-poster" style="display:none;">
-                     <img id="answer-image" src="" alt="Answer Poster" style="max-width: 100%; height: auto;">
-                 </div><br>
+                <!-- Button to reveal the answer -->
+                <button id="reveal-answer-btn" style="display:none;" onclick="revealAnswer()">Reveal Poster</button>
+                <div id="answer-poster" style="display:none;">
+                    <img id="answer-image" src="" alt="Answer Poster" style="max-width: 100%; height: auto;">
+                </div><br>
         
                 <input type="text" id="answer" placeholder="Enter your guess...">
-                <button onclick="checkAnswer()">Check Answer</button>
+                <button id="check-answer-btn" onclick="checkAnswer()">Check Answer</button>
                 <p id="result"></p>
         
                 <button id="new-game" onclick="endAndStartNewGame()">Start New Game</button>
@@ -49,10 +49,6 @@
         </div><br>
         
         <a href="{{ url_for('logout') }}">Logout</a>
-        
-        
-        
-
     </div>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>

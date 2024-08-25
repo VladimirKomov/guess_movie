@@ -190,8 +190,6 @@ def check_answer_view():
     user_answer = request.form['answer']
     game = load_game_from_session()
 
-    print(f'User answer: {user_answer}')
-    print(f'Correct answer: {game.film[5]}')
     is_correct = game.is_same_film(user_answer)
 
     return jsonify({'result': 'Correct!' if is_correct else 'Incorrect. Try again!', 'correct': is_correct})
