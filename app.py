@@ -55,8 +55,6 @@ def login():
             session['name'] = user.name
             session['role_id'] = user.role_id
             
-            flash('Login successful!', 'success')
-            
             # Redirect to admin page if the user is an admin
             if user.role_id == 2:  # Assuming role_id 2 is for administrators
                 return redirect(url_for('admin'))
