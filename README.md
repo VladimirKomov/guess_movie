@@ -10,7 +10,6 @@
 The archive of the database is given in the backup_dataBase file.
 The database contains about 80 movies, you need to edit the config_database.ini file to connect to your database.
 To add new movies to the database, you need to edit the config_api.ini file, register on the website https://www.themoviedb.org/settings/api and to get a free key, add the keys to the config_api.ini file.
-
 Admin panel login 'admin' password '123'
 
 ## Features
