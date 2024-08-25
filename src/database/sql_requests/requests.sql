@@ -13,6 +13,8 @@ SELECT * FROM user_role;
 
 SELECT * FROM known_for_department;
 
+SELECT * FROM result;
+
 -- UPDATE users
 -- SET role_id = 2
 -- WHERE nick = 'admin'; 
