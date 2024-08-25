@@ -2,10 +2,22 @@ function startGame() {
     // Clear all previous hints and result
     document.getElementById("hint1").style.display = "none";
     document.getElementById("hint2").style.display = "none";
+    document.getElementById("hint3").style.display = "none";
+    document.getElementById("hint4").style.display = "none";
+    document.getElementById("hint5").style.display = "none";
     document.getElementById("hint-image").style.display = "none";
     document.getElementById("answer").value = "";
     document.getElementById("result").textContent = "";
     document.getElementById("hint2-btn").style.display = "none";
+    document.getElementById("hint3-btn").style.display = "none";
+    document.getElementById("hint4-btn").style.display = "none";
+    document.getElementById("hint5-btn").style.display = "none";
+    document.getElementById("hint6-btn").style.display = "none";
+    document.getElementById("reveal-answer-btn").style.display = "none";
+
+    // Enable the answer input and check button
+    document.getElementById("answer").disabled = false;
+    document.getElementById("check-answer-btn").disabled = false;
 
     // Start a new game
     fetch('/start_game', {
@@ -33,10 +45,12 @@ function showHint(hintNumber) {
               if (hintNumber < 6) {
                   document.getElementById(`hint${hintNumber}`).textContent = data.hint;
                   document.getElementById(`hint${hintNumber}`).style.display = "block";
-                  // Disable the current hint button after showing the hint
                   document.getElementById(`hint${hintNumber}-btn`).disabled = true;
+
                   if (hintNumber + 1 <= 6) {
                       document.getElementById(`hint${hintNumber + 1}-btn`).style.display = "inline-block";
+                  } else {
+                      document.getElementById("reveal-answer-btn").style.display = "inline-block";
                   }
               } else if (hintNumber === 6) {  // Image hint
                   const imageUrl = data.hint;
@@ -44,6 +58,7 @@ function showHint(hintNumber) {
                   document.getElementById("image-link").href = imageUrl;
                   document.getElementById("image-hint").style.display = "block";
                   document.getElementById(`hint${hintNumber}-btn`).disabled = true;
+                  document.getElementById("reveal-answer-btn").style.display = "inline-block";
               }
           }
       });
@@ -57,6 +72,10 @@ function revealAnswer() {
           if (data.poster_url) {
               document.getElementById("answer-image").src = data.poster_url;
               document.getElementById("answer-poster").style.display = "block";
+
+              // Disable the answer input and check button
+              document.getElementById("answer").disabled = true;
+              document.getElementById("check-answer-btn").disabled = true;
           }
       });
 }
