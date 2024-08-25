@@ -15,8 +15,6 @@ class InsertGameData():
                 # Checking for an entry in the result table
                 cursor.execute('SELECT id FROM result WHERE id_user = %s', (game.user.user_id,))
                 existing_record = cursor.fetchone()
-                print(existing_record)
-                print(game.user.user_id)
                 # If the record exists, update it
                 if existing_record is not None:
                     cursor.execute('''UPDATE result SET number_games = number_games + 1,
