@@ -1,8 +1,8 @@
 # Default ignored files
-**/config_database.ini
+# **/config_database.ini
 /venv/
 **/__pycache__
 /.vscode/
 /.idea/
-**/config_api.ini
+# **/config_api.ini
 **/test.py
