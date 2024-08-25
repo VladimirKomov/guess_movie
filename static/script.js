@@ -49,6 +49,18 @@ function showHint(hintNumber) {
       });
 }
 
+function revealAnswer() {
+    fetch('/reveal_answer', {
+        method: 'POST'
+    }).then(response => response.json())
+      .then(data => {
+          if (data.poster_url) {
+              document.getElementById("answer-image").src = data.poster_url;
+              document.getElementById("answer-poster").style.display = "block";
+          }
+      });
+}
+
 function checkAnswer() {
     const userAnswer = document.getElementById("answer").value;
 

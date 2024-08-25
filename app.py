@@ -196,6 +196,16 @@ def check_answer_view():
 
     return jsonify({'result': 'Correct!' if is_correct else 'Incorrect. Try again!', 'correct': is_correct})
 
+@app.route('/reveal_answer', methods=['POST'])
+@login_required
+def reveal_answer():
+    game = load_game_from_session()
+    
+    # get URL poster
+    poster_url = game.get_imagePoster()
+
+    return jsonify({'poster_url': poster_url})
+
 @app.route('/end_game', methods=['POST'])
 def end_game():
     session.pop('game', None)  # Remove the current game from the session

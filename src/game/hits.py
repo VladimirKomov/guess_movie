@@ -83,3 +83,9 @@ class ImageHint(Hint):
         data = game.film[2]
         return_str = f"https://image.tmdb.org/t/p/original{data}"
         return return_str
+    
+class ImagePoster(Hint):
+    def apply(self, game):
+        data = game.film[7]
+        return_str = f"https://image.tmdb.org/t/p/original{data}"
+        return return_str

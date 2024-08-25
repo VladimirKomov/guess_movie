@@ -53,6 +53,13 @@ class Game:
         image_result = image_hint.apply(self)
         return image_result
     
+    # 7. getting poster in the current game.
+    # a string with a link will be returned
+    def get_imagePoster(self):
+        poster = ImagePoster()
+        image_result = poster.apply(self)
+        return image_result
+    
 
     # we compare the string that the user entered with the title of the movie
     def is_same_film(self, user_input, threshold=90) -> bool:
