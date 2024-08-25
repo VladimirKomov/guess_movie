@@ -1,4 +1,4 @@
-from database_game_manager import InsertGameData
+from src.database.database_game_manager import InsertGameData
 from src.database.database_film_manager import GetData
 from src.game.hits import *
 from rapidfuzz import fuzz
@@ -55,9 +55,9 @@ class Game:
     
 
     # we compare the string that the user entered with the title of the movie
-    def is_same_film(self, user_input, threshold=80) -> bool:
+    def is_same_film(self, user_input, threshold=90) -> bool:
         similarity = fuzz.partial_ratio(self.film[5], user_input)
-        # Check if it is higher than the threshold value (80%)
+        # Check if it is higher than the threshold value (90%)
         result = similarity >= threshold
         InsertGameData.insert_game_result(self, result)
         InsertGameData.insert_guessed_films(self, result)

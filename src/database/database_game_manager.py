@@ -1,4 +1,4 @@
-from database_connection import DatabaseConnection
+from src.database.database_connection import DatabaseConnection
 
 
 class InsertGameData():

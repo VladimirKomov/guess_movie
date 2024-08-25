@@ -163,6 +163,9 @@ def start_game_view():
 def get_hint():
     game = load_game_from_session()
 
+    #show the current movie in the terminal
+    print(f'Current movie {game.film[5]}')
+    
     hint_funcs = {
         1: game.get_genreHint,
         2: game.get_actorsHint,
@@ -184,11 +187,12 @@ def get_hint():
 @app.route('/check_answer', methods=['POST'], endpoint='check_answer')
 @login_required
 def check_answer_view():
-    user_answer = request.form['answer'].strip().lower()
+    user_answer = request.form['answer']
     game = load_game_from_session()
 
-    correct_answer = game.film[5].strip().lower()
-    is_correct = user_answer == correct_answer
+    print(f'User answer: {user_answer}')
+    print(f'Correct answer: {game.film[5]}')
+    is_correct = game.is_same_film(user_answer)
 
     return jsonify({'result': 'Correct!' if is_correct else 'Incorrect. Try again!', 'correct': is_correct})
 
