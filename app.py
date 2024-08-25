@@ -162,7 +162,7 @@ def get_hint():
     game = load_game_from_session()
 
     #show the current movie in the terminal
-    print(f'Current movie {game.film[5]}')
+    print(f'Current movie: {game.film[5]}')
     
     hint_funcs = {
         1: game.get_genreHint,
