@@ -43,6 +43,7 @@ function showHint(hintNumber) {
       .then(data => {
           if (data.hint) {
               if (hintNumber < 6) {
+                  // Display the hint and prepare the next button
                   document.getElementById(`hint${hintNumber}`).textContent = data.hint;
                   document.getElementById(`hint${hintNumber}`).style.display = "block";
                   document.getElementById(`hint${hintNumber}-btn`).disabled = true;
@@ -65,11 +66,14 @@ function showHint(hintNumber) {
 }
 
 function revealAnswer() {
+    // Disable the button after it is clicked
+    document.getElementById("reveal-answer-btn").disabled = true;
     fetch('/reveal_answer', {
         method: 'POST'
     }).then(response => response.json())
       .then(data => {
           if (data.poster_url) {
+              // Display the answer image
               document.getElementById("answer-image").src = data.poster_url;
               document.getElementById("answer-poster").style.display = "block";
 
@@ -92,6 +96,7 @@ function checkAnswer() {
     }).then(response => response.json())
       .then(data => {
           const resultElement = document.getElementById("result");
+          // Display the result of the answer check
           resultElement.textContent = data.result;
           resultElement.style.color = data.correct ? "green" : "red";
       });
@@ -107,15 +112,5 @@ function endAndStartNewGame() {
               startGame();
               window.location.reload(); // Reload the page after starting a new game
           }
-      });
-}
-
-function startGame() {
-    fetch('/start_game', {
-        method: 'POST'
-    }).then(response => response.json())
-      .then(html => {
-          document.getElementById("game-area").innerHTML = html;
-          window.location.reload(); // Reload the page after starting a new game
       });
 }
